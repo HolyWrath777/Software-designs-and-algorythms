@@ -1,22 +1,14 @@
-import { Table as MuiTable } from '@mui/material';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import { Table as MuiTable } from "@mui/material";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
-import styles from './Table.module.scss'
-
-export interface Row {
-  avatar: string
-  username: string
-  country: string
-  name: string
-  lastPayments: number
-  posts: number
-}
+import styles from "./Table.module.scss";
+import { Row } from "../../../types";
 
 interface TableProps {
-  rows: Row[]
+  rows: Row[];
 }
 
 export function Table(props: TableProps) {
