@@ -6,36 +6,39 @@ import { getImages, getUsers, getAccounts } from './mocks/api';
 
 import styles from './App.module.scss';
 
-import type { Row } from './components';
-import type { Image, User, Account } from '../types';
+import type { Image, User, Account, Row } from '../types';
 
 import rows from './mocks/rows.json';
+import { dataConverter, getLastPayment } from './helpers';
 
 // mockedData has to be replaced with parsed Promises’ data
 const mockedData: Row[] = rows.data;
 
 function App() {
   const [data, setData] = useState<Row[]>(undefined);
+  const [updatedStore, updateStore] = useState(data);
+  const [searchResults, setSearchResults] = useState<Row[]>(undefined);
 
   useEffect(() => {
-    // fetching data from API
     Promise.all([getImages(), getUsers(), getAccounts()]).then(
-      ([images, users, accounts]: [Image[], User[], Account[]]) =>
-        console.log(images, users, accounts)
+      ([images, users, accounts]: [Image[], User[], Account[]]) => {
+        setData(dataConverter(users, accounts, images));
+        updateStore(dataConverter(users, accounts, images));
+      }
     );
-  }, [])
+  }, []);
 
   return (
     <StyledEngineProvider injectFirst>
-      <div className="App">
+      <div className='App'>
         <div className={styles.container}>
           <div className={styles.sortFilterContainer}>
-            <Filters />
-            <Sort />
+            <Filters data={data} updateStore={updateStore} />
+            <Sort store={updatedStore} updateStore={updateStore} />
           </div>
-          <Search />
+          <Search store={updatedStore} updateStore={setSearchResults} data={data} />
         </div>
-        <Table rows={data || mockedData} />
+        <Table rows={searchResults || updatedStore || mockedData} />
       </div>
     </StyledEngineProvider>
   );

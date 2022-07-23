@@ -1,48 +1,27 @@
-import { useState } from 'react';
-import Checkbox from '@mui/material/Checkbox';
+import { useEffect, useState } from "react";
+import Checkbox from "@mui/material/Checkbox";
 
-import styles from './Filters.module.scss';
+import styles from "./Filters.module.scss";
+import { Row } from "../../../types";
+import { filterData, OPTIONS, updateFilters } from ".";
 
 interface FiltersProps {
-  store?: {};
+  data: Row[];
   updateStore?: (val) => void;
 }
 
-// OR
-
-//interface FiltersProps {
-//  selected?: {};
-//  updateSelected?: (val) => void;
-//}
-
-// OR store can be global
-
-const OPTIONS = [
-  {
-    title: 'Without posts',
-  },
-  {
-    title: 'More than 100 posts',
-  },
-];
-
-export function Filters(props: FiltersProps) {
+export function Filters({ data, updateStore }: FiltersProps) {
   const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
 
   const onChange = ({ title }) => {
-    console.log(title); // for debugging
-
-    let updatedFilters;
-    if (selectedFilter.find((filter) => filter === title)) {
-      updatedFilters = selectedFilter.filter(
-        (filter) => filter !== title
-      );
-    } else {
-      updatedFilters = [...selectedFilter, title];
-    }
-
-    setSelectedFilter(updatedFilters);
+    setSelectedFilter(updateFilters(selectedFilter, title));
   };
+
+  useEffect(() => {
+    selectedFilter.length
+      ? updateStore(filterData(selectedFilter, data))
+      : updateStore(data);
+  }, [data, selectedFilter, updateStore]);
 
   return (
     <div className={styles.group}>
@@ -55,12 +34,14 @@ export function Filters(props: FiltersProps) {
             key={option.title}
           >
             <Checkbox
-              checked={!!selectedFilter.find(filter => filter === option.title)}
+              checked={
+                !!selectedFilter.find((filter) => filter === option.title)
+              }
               value={option.title}
               onChange={() => onChange(option)}
               size="small"
               color="primary"
-            />{' '}
+            />{" "}
             {option.title}
           </li>
         ))}
